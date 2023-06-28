@@ -154,6 +154,8 @@ export class FrameManager extends EventEmitter {
   }
 
   async initialize(client: CDPSession = this.#client): Promise<void> {
+    // console.log(client);
+    // console.log(this.#handleFrameTree, isErrorLike, isTargetClosedError, this.#createIsolatedWorld);
     try {
       const result = await Promise.all([
         client.send('Page.enable'),
@@ -180,6 +182,7 @@ export class FrameManager extends EventEmitter {
 
       throw error;
     }
+    // return Promise.resolve()
   }
 
   executionContextById(
@@ -352,28 +355,30 @@ export class FrameManager extends EventEmitter {
       return;
     }
 
-    await session.send('Page.addScriptToEvaluateOnNewDocument', {
-      source: `//# sourceURL=${PuppeteerURL.INTERNAL_URL}`,
-      worldName: name,
-    });
+    console.debug(session, name);
 
-    await Promise.all(
-      this.frames()
-        .filter(frame => {
-          return frame._client() === session;
-        })
-        .map(frame => {
-          // Frames might be removed before we send this, so we don't want to
-          // throw an error.
-          return session
-            .send('Page.createIsolatedWorld', {
-              frameId: frame._id,
-              worldName: name,
-              grantUniveralAccess: true,
-            })
-            .catch(debugError);
-        })
-    );
+    // await session.send('Page.addScriptToEvaluateOnNewDocument', {
+    //   source: `//# sourceURL=${PuppeteerURL.INTERNAL_URL}`,
+    //   worldName: name,
+    // });
+
+    // await Promise.all(
+    //   this.frames()
+    //     .filter(frame => {
+    //       return frame._client() === session;
+    //     })
+    //     .map(frame => {
+    //       // Frames might be removed before we send this, so we don't want to
+    //       // throw an error.
+    //       return session
+    //         .send('Page.createIsolatedWorld', {
+    //           frameId: frame._id,
+    //           worldName: name,
+    //           grantUniveralAccess: true,
+    //         })
+    //         .catch(debugError);
+    //     })
+    // );
 
     this.#isolatedWorlds.add(key);
   }
