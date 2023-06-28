@@ -448,49 +448,49 @@ export function evaluationString(
  * @internal
  */
 export function addPageBinding(type: string, name: string): void {
+  console.log(type, name);
   // This is the CDP binding.
-  // @ts-expect-error: In a different context.
-  const callCDP = globalThis[name];
+  // const callCDP = globalThis[name];
 
-  // We replace the CDP binding with a Puppeteer binding.
-  Object.assign(globalThis, {
-    [name](...args: unknown[]): Promise<unknown> {
-      // This is the Puppeteer binding.
-      // @ts-expect-error: In a different context.
-      const callPuppeteer = globalThis[name];
-      callPuppeteer.args ??= new Map();
-      callPuppeteer.callbacks ??= new Map();
+  // // We replace the CDP binding with a Puppeteer binding.
+  // Object.assign(globalThis, {
+  //   [name](...args: unknown[]): Promise<unknown> {
+  //     // This is the Puppeteer binding.
+  //     // @ts-expect-error: In a different context.
+  //     const callPuppeteer = globalThis[name];
+  //     callPuppeteer.args ??= new Map();
+  //     callPuppeteer.callbacks ??= new Map();
 
-      const seq = (callPuppeteer.lastSeq ?? 0) + 1;
-      callPuppeteer.lastSeq = seq;
-      callPuppeteer.args.set(seq, args);
+  //     const seq = (callPuppeteer.lastSeq ?? 0) + 1;
+  //     callPuppeteer.lastSeq = seq;
+  //     callPuppeteer.args.set(seq, args);
 
-      callCDP(
-        JSON.stringify({
-          type,
-          name,
-          seq,
-          args,
-          isTrivial: !args.some(value => {
-            return value instanceof Node;
-          }),
-        })
-      );
+  //     callCDP(
+  //       JSON.stringify({
+  //         type,
+  //         name,
+  //         seq,
+  //         args,
+  //         isTrivial: !args.some(value => {
+  //           return value instanceof Node;
+  //         }),
+  //       })
+  //     );
 
-      return new Promise((resolve, reject) => {
-        callPuppeteer.callbacks.set(seq, {
-          resolve(value: unknown) {
-            callPuppeteer.args.delete(seq);
-            resolve(value);
-          },
-          reject(value?: unknown) {
-            callPuppeteer.args.delete(seq);
-            reject(value);
-          },
-        });
-      });
-    },
-  });
+  //     return new Promise((resolve, reject) => {
+  //       callPuppeteer.callbacks.set(seq, {
+  //         resolve(value: unknown) {
+  //           callPuppeteer.args.delete(seq);
+  //           resolve(value);
+  //         },
+  //         reject(value?: unknown) {
+  //           callPuppeteer.args.delete(seq);
+  //           reject(value);
+  //         },
+  //       });
+  //     });
+  //   },
+  // });
 }
 
 /**

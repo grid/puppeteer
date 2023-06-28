@@ -32,7 +32,7 @@ import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
 import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
-import {debugError, PuppeteerURL} from './util.js';
+// import {debugError, PuppeteerURL} from './util.js';
 
 /**
  * @internal
@@ -354,8 +354,7 @@ export class FrameManager extends EventEmitter {
     if (this.#isolatedWorlds.has(key)) {
       return;
     }
-
-    console.debug(session, name);
+    // console.log(PuppeteerURL.INTERNAL_URL, debugError);
 
     // await session.send('Page.addScriptToEvaluateOnNewDocument', {
     //   source: `//# sourceURL=${PuppeteerURL.INTERNAL_URL}`,
